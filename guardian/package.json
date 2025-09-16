@@ -1,15 +1,23 @@
 {
-"name": "@sigilographics/guardian",
-"version": "0.1.0",
-"type": "module",
-"main": "dist/index.js",
-"types": "dist/index.d.ts",
-"files": ["dist"],
-"scripts": {
-"build": "tsc -p tsconfig.json"
-},
-"dependencies": {},
-"devDependencies": {
-"typescript": "^5.5.4"
-}
+  "name": "@sigilographics/guardian",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json"
+  },
+  "peerDependencies": {
+    "react": "*",
+    "express": "*"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/express": "*",
+    "@types/react": "*",
+    "typescript": "^5.5.4"
+  }
 }
