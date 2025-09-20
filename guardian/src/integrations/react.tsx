@@ -7,11 +7,14 @@ import { AllowAllPolicy } from "../policy";
 import { Auditor, ConsoleSink } from "../audit";
 
 
+import { verifyEd25519Browser } from "../crypto";
+
 export type GuardianClient = {
-id: GuardianIdentity;
-memory: GuardianMemory;
-policy: GuardianPolicy;
-audit: Auditor;
+  id: GuardianIdentity;
+  memory: GuardianMemory;
+  policy: GuardianPolicy;
+  audit: Auditor;
+  verify: (payload: string, signature: string) => Promise<boolean>;
 };
 
 
@@ -29,15 +32,25 @@ identity?: GuardianIdentity;
 memory?: GuardianMemory;
 policy?: GuardianPolicy;
 }) {
-const value: GuardianClient = useMemo(() => {
-const audit = new Auditor().addSink(new ConsoleSink());
-return {
-id: identity,
-memory: memory ?? new InMemoryMemory(),
-policy: policy ?? AllowAllPolicy,
-audit,
-};
-}, [identity, memory, policy]);
+  const value: GuardianClient = useMemo(() => {
+    const audit = new Auditor().addSink(new ConsoleSink());
+
+    async function verify(payload: string, signature: string): Promise<boolean> {
+      if (!identity.publicKey) {
+        console.warn("Guardian: no public key, cannot verify");
+        return false;
+      }
+      return verifyEd25519Browser(payload, signature, identity.publicKey);
+    }
+
+    return {
+      id: identity,
+      memory: memory ?? new InMemoryMemory(),
+      policy: policy ?? AllowAllPolicy,
+      audit,
+      verify,
+    };
+  }, [identity, memory, policy]);
 
 
 return <GuardianCtx.Provider value={value}>{children}</GuardianCtx.Provider>;
